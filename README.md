@@ -110,7 +110,6 @@ test suite says so. Old links can pin the old generator with `?v=1`.
 /2026-09-11      that date
 /archive         calendar
 /about           the explanation
-?debug=1         seeds, attempt number, solver stats, timings
 ```
 
 History-API routing, so static hosts need a catch-all rewrite to `index.html`.

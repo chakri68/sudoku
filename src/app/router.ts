@@ -13,7 +13,7 @@ import { GENERATOR_VERSION, isSupportedVersion } from "../generator/version.ts";
  *   /archive       calendar
  *   /about         how the generation works
  *
- * Query: ?v=1 pins a generator version, ?debug=1 shows the seed panel.
+ * Query: ?v=1 pins a generator version.
  * Nothing here is trusted -- a bad path falls back to today rather than
  * throwing, and an unsupported version falls back to the current one.
  */
@@ -23,7 +23,6 @@ export interface Route {
   view: View;
   date: string;
   version: number;
-  debug: boolean;
 }
 
 export function parseLocation(url: URL = new URL(location.href)): Route {
@@ -32,17 +31,16 @@ export function parseLocation(url: URL = new URL(location.href)): Route {
 
   const requested = Number(params.get("v") ?? params.get("version"));
   const version = isSupportedVersion(requested) ? requested : GENERATOR_VERSION;
-  const debug = params.get("debug") === "1";
 
   if (segment === "archive" || segment === "about") {
-    return { view: segment, date: getTodayDateString(), version, debug };
+    return { view: segment, date: getTodayDateString(), version };
   }
 
   if (isValidDateString(segment) && isWithinRange(segment)) {
-    return { view: "puzzle", date: segment, version, debug };
+    return { view: "puzzle", date: segment, version };
   }
 
-  return { view: "puzzle", date: getTodayDateString(), version, debug };
+  return { view: "puzzle", date: getTodayDateString(), version };
 }
 
 export function buildPath(route: Partial<Route> & { date: string }): string {
@@ -50,7 +48,6 @@ export function buildPath(route: Partial<Route> & { date: string }): string {
   if (route.version !== undefined && route.version !== GENERATOR_VERSION) {
     params.set("v", String(route.version));
   }
-  if (route.debug) params.set("debug", "1");
 
   const base =
     route.view === "archive" || route.view === "about"

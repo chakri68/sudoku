@@ -1,4 +1,3 @@
-import { serializeBoard } from "../core/board.ts";
 import {
   addDays,
   formatLongDate,
@@ -7,7 +6,6 @@ import {
   weekdayName,
 } from "../generator/date.ts";
 import { difficultyLabel } from "../generator/difficulty.ts";
-import { seedString } from "../generator/hash.ts";
 import type { SudokuPuzzle } from "../generator/types.ts";
 import { GENERATOR_VERSION } from "../generator/version.ts";
 import { GameState } from "../game/gameState.ts";
@@ -73,8 +71,6 @@ export class App {
 
   private sessionBody!: HTMLElement;
   private streakBody!: HTMLElement;
-  private debugPanel!: Panel;
-  private debugBody!: HTMLElement;
   private calendar!: ArchiveCalendar;
 
   constructor(mount: HTMLElement) {
@@ -198,10 +194,6 @@ export class App {
     this.calendar = new ArchiveCalendar(getTodayDateString(), (date) => this.navigate({ date }));
     archivePanel.body.append(this.calendar.root);
 
-    this.debugPanel = new Panel("Generator");
-    this.debugBody = this.debugPanel.body;
-    this.debugPanel.setVisible(false);
-
     const aboutPanel = new Panel("About", true);
     aboutPanel.body.append(buildAboutContent());
 
@@ -211,7 +203,6 @@ export class App {
       sessionPanel.root,
       streakPanel.root,
       archivePanel.root,
-      this.debugPanel.root,
       aboutPanel.root,
       this.notice,
     ]);
@@ -255,9 +246,6 @@ export class App {
     if (wanted !== this.activeDate || previous?.version !== route.version) {
       await this.loadPuzzle({ ...route, date: wanted });
     }
-
-    this.debugPanel.setVisible(route.debug);
-    if (route.debug) this.renderDebug();
 
     if (route.view === "archive") this.openArchiveModal();
     else if (route.view === "about") this.openAboutModal();
@@ -317,7 +305,6 @@ export class App {
       view: partial.view ?? "puzzle",
       date,
       version: partial.version ?? this.route?.version ?? GENERATOR_VERSION,
-      debug: partial.debug ?? this.route?.debug ?? false,
     });
   }
 
@@ -458,7 +445,6 @@ export class App {
 
     this.renderSession();
     this.renderStreak();
-    if (this.route?.debug) this.renderDebug();
   }
 
   private renderSession(): void {
@@ -511,40 +497,6 @@ export class App {
       dots,
       el("div", { class: "visually-hidden", text: `Current streak ${streak.current} days, best ${streak.best}` }),
     );
-  }
-
-  private renderDebug(): void {
-    const puzzle = this.puzzle;
-    if (!puzzle) return;
-    const m = puzzle.metrics;
-
-    const entries: [string, string][] = [
-      ["date", puzzle.date],
-      ["version", String(puzzle.version)],
-      ["id", puzzle.id],
-      ["fingerprint", puzzle.fingerprint],
-      ["attempt", String(puzzle.attempt)],
-      ["fallback", String(puzzle.fallback)],
-      ["difficulty seed", String(puzzle.seeds.difficulty)],
-      ["board seed", String(puzzle.seeds.board)],
-      ["removal seed", String(puzzle.seeds.removal)],
-      ["seed string", seedString(puzzle.date, "board", puzzle.version, puzzle.attempt)],
-      ["clues", String(puzzle.clues)],
-      ["score", String(m.score)],
-      ["hardest technique", m.hardestTechnique ?? "none"],
-      ["logical solve", String(m.solvedLogically)],
-      ["solver nodes", String(m.solverNodes)],
-      ["guesses", String(m.guesses)],
-      ["max depth", String(m.maxDepth)],
-      ["generation", `${puzzle.generationMs} ms`],
-      ["puzzle", serializeBoard(puzzle.puzzle)],
-    ];
-
-    const list = el("dl", { class: "kv" });
-    for (const [key, value] of entries) {
-      list.append(el("dt", { text: key }), el("dd", { text: value }));
-    }
-    this.debugBody.replaceChildren(list);
   }
 
   private onTick(ms: number): void {
@@ -783,10 +735,5 @@ function buildAboutContent(): HTMLElement {
       class: "note",
       text: "Same date, same generator version, same puzzle - on any device, in any browser, forever. Open a date from ten years ago and you get the grid that date always had.",
     }),
-    el("p", { class: "note" }, [
-      document.createTextNode("Append "),
-      el("code", { text: "?debug=1" }),
-      document.createTextNode(" to any date to see its seeds."),
-    ]),
   ]);
 }

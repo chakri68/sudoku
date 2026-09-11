@@ -24,7 +24,8 @@
   --danger-soft: #ff9b9b;
 
   --font-pixel: "Press Start 2P", ui-monospace, monospace;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --sidebar-width: 380px;
 
@@ -128,7 +129,6 @@ h3 {
   gap: 18px;
   flex-wrap: wrap;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -333,7 +333,6 @@ body.resizing .board {
 .sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  border-left: 1px solid var(--border);
   overflow-y: auto;
   scrollbar-gutter: stable;
   padding: 12px 14px 24px;
@@ -372,6 +371,7 @@ body.resizing .board {
   color: var(--accent);
   font-family: var(--font-mono);
   font-size: 5.4cqw;
+  grid-template: 1fr / 1fr;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   line-height: 1;
@@ -382,27 +382,52 @@ body.resizing .board {
 /* Hairlines between cells, heavier rules between the 3x3 boxes. Columns stay
    exactly 1fr because the borders sit inside the box.
    All four widths are declared: leaving top/left unset lets the user-agent
-   button border through, which draws light outset edges on a dark grid. */
+   button border through, which draws light outset edges on a dark grid.
+
+   Each cell carries its rules on the right and bottom only, which pulls the
+   content box off-centre by the border width. The matching padding on the
+   left and top puts it back, so the digit sits on the middle of the cell
+   rather than the middle of what is left of it. */
 .cell {
   border: 0 solid var(--border);
   border-right-width: 1px;
   border-bottom-width: 1px;
+  padding: 1px 0 0 1px;
 }
 .cell[data-col="2"],
 .cell[data-col="5"] {
   border-right-width: 2px;
   border-right-color: var(--border-strong);
+  padding-left: 2px;
 }
 .cell[data-row="2"],
 .cell[data-row="5"] {
   border-bottom-width: 2px;
   border-bottom-color: var(--border-strong);
+  padding-top: 2px;
 }
 .cell[data-col="8"] {
   border-right-width: 0;
+  padding-left: 0;
 }
 .cell[data-row="8"] {
   border-bottom-width: 0;
+  padding-top: 0;
+}
+
+/* The value and the pencil marks share one grid area. Left to flow, the
+   notes container claims a second row and shoves the digit upwards -- it is
+   always in the DOM, even when empty. */
+.cell > .value,
+.cell > .notes {
+  grid-area: 1 / 1;
+}
+
+.cell > .value {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .cell.given {
@@ -758,23 +783,6 @@ body.resizing .board {
   margin-top: 10px;
   font-size: 10px;
   color: var(--muted);
-}
-
-/* --- debug --- */
-
-.kv {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 3px 10px;
-  font-size: 11px;
-}
-.kv dt {
-  color: var(--muted);
-}
-.kv dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-  word-break: break-all;
 }
 
 /* ==========================================================================

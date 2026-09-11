@@ -38,9 +38,7 @@ describe("route parsing", () => {
     expect(at("/3500-01-01").date).toBe(getTodayDateString());
   });
 
-  it("reads flags", () => {
-    expect(at("/2026-09-11?debug=1").debug).toBe(true);
-    expect(at("/2026-09-11").debug).toBe(false);
+  it("reads the version flag", () => {
     expect(at("/2026-09-11?v=1").version).toBe(1);
   });
 
@@ -57,11 +55,6 @@ describe("path building", () => {
 
   it("writes other dates as a path", () => {
     expect(buildPath({ date: OTHER_DAY })).toBe(`/${OTHER_DAY}`);
-  });
-
-  it("carries the debug flag", () => {
-    expect(buildPath({ date: OTHER_DAY, debug: true })).toBe(`/${OTHER_DAY}?debug=1`);
-    expect(buildPath({ date: getTodayDateString(), debug: true })).toBe("/?debug=1");
   });
 
   it("round-trips through the parser", () => {

@@ -45,7 +45,7 @@ export interface SudokuPuzzle {
   fallback: boolean;
   seeds: PuzzleSeeds;
   metrics: DifficultyMetrics;
-  /** Wall-clock generation time. Debug only -- never feeds generation. */
+  /** Wall-clock generation time, reported by the CLI. Never feeds generation. */
   generationMs: number;
   /** Short digest of the puzzle grid, for spotting drift at a glance. */
   fingerprint: string;

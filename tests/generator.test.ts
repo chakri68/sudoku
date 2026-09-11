@@ -189,7 +189,7 @@ describe("generator hygiene", () => {
     }
   });
 
-  it("keeps Date.now out of everything except the debug timing field", () => {
+  it("keeps Date.now out of everything except the reported timing field", () => {
     for (const root of ["src/generator", "src/solver", "src/core"]) {
       for (const file of walk(root)) {
         if (file.endsWith("generateDailyPuzzle.ts")) continue;
