@@ -4,32 +4,16 @@
    never shadow. Nothing else gets a colour unless it means warn or danger.
    ========================================================================== */
 
+/* The 12 shared tokens (--bg --panel-2 --panel --border --text --muted --accent
+   --accent-dim --warn --danger --font-pixel --font-mono, plus color-scheme) come
+   from theme.chakri.me/tokens.css, linked in index.html. Never redefine them
+   here — that shadows the source and drifts. Only sudoku's own extras live
+   below, using names that cannot collide with the shared set. */
 :root {
-  /* Surfaces, darkest to lightest */
-  --bg: #000000;
-  --panel-2: #000;
-  --panel: #0b0b0a;
-
-  /* Lines & text */
-  --border: #2b2925;
-  --border-strong: #46413a;
-  --text: #ece7da;
-  --muted: #8b8574;
-
-  /* Accent - the only chromatic colour */
-  --accent: #ffb000;
-  --accent-dim: #cc8a00;
-  --warn: #ff6a2b;
-  --danger: #ff6b6b;
-  --danger-soft: #ff9b9b;
-
-  --font-pixel: "Press Start 2P", ui-monospace, monospace;
-  --font-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --border-strong: #46413a; /* a stronger warm-gray than --border */
+  --danger-soft: #ff9b9b; /* danger body copy, a shade under --danger */
 
   --sidebar-width: 380px;
-
-  color-scheme: dark;
 }
 
 /* The theme is a single committed look, not a light/dark pair. */
